@@ -56,9 +56,6 @@ if (!fs.existsSync(depsPath)) {
 }
 const deps = JSON.parse(fs.readFileSync(depsPath, 'utf8'));
 
-const isLinuxX64 = os.platform() === 'linux' && os.arch() === 'x64';
-const ortPackageName = isLinuxX64 ? 'Microsoft.ML.OnnxRuntime.Gpu.Linux' : 'Microsoft.ML.OnnxRuntime.Foundry';
-
 const ortVersion = deps.onnxruntime.version;
 const genaiVersion = deps['onnxruntime-genai'].version;
 
@@ -79,7 +76,7 @@ function expectedGenai() {
 }
 
 const ARTIFACTS = [
-    { name: ortPackageName, version: ortVersion, expected: expectedOrt() },
+    { name: 'Microsoft.ML.OnnxRuntime', version: ortVersion, expected: expectedOrt() },
     { name: 'Microsoft.ML.OnnxRuntimeGenAI.Foundry', version: genaiVersion, expected: expectedGenai() },
 ];
 
@@ -231,7 +228,7 @@ async function installPackage(artifact, tempDir, binDir) {
 }
 
 // libfoundry_local records a versioned SONAME/install_name dependency on ORT
-// (libonnxruntime.so.1 / libonnxruntime.1.dylib), but the Foundry ORT nupkg extracts
+// (libonnxruntime.so.1 / libonnxruntime.1.dylib), but the vanilla ORT nupkg extracts
 // the unversioned libonnxruntime.{so,dylib}. Rename the extracted file to the versioned
 // soname so foundry_local resolves it via rpath. Windows uses onnxruntime.dll, which has
 // no soname.
